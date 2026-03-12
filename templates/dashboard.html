@@ -1,0 +1,285 @@
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مختبر الفطريات الذكي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        
+        body { 
+            background: #020202; 
+            color: white; 
+            font-family: 'Cairo', sans-serif; 
+            min-height: 100vh; 
+            margin: 0; 
+            overflow-x: hidden;
+        }
+
+        /* الخلايا الواضحة (نفس حيوية الواجهة الأولى) */
+        .bg-animate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .cell { 
+            position: absolute; 
+            opacity: 0.4; 
+            filter: drop-shadow(0 0 8px rgba(230, 126, 34, 0.4)); 
+            animation: float 12s infinite linear; 
+        }
+        @keyframes float { 
+            from { transform: translateY(110vh) rotate(0deg); } 
+            to { transform: translateY(-10vh) rotate(360deg); } 
+        }
+
+        /* الهيدر الزجاجي - الحجم الطبيعي */
+        .glass-header { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
+            padding: 12px 25px; 
+            position: sticky; top: 0; z-index: 100; 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .back-nav {
+            border: 1px solid #c9630a; color: #e97b04;
+            padding: 5px 18px; border-radius: 10px;
+            font-weight: 900; text-decoration: none; transition: 0.3s; font-size: 0.9rem;
+        }
+        .back-nav:hover { background: #f1820a; color: white; }
+
+        /* الكروت - الحجم المتناسق */
+        .category-card { 
+            background: rgba(255, 255, 255, 0.02); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 25px; padding: 20px; transition: 0.4s;
+            text-align: center;
+            height: 100%;
+        }
+        .category-card:hover { 
+            transform: translateY(-5px); border-color: #ed7d05; 
+            background: rgba(230, 126, 34, 0.05);
+        }
+
+        .btn-enter { 
+            background: linear-gradient(90deg, #d76609, #e57c0c); 
+            width: 100%; padding: 10px; border-radius: 12px; 
+            margin-top: 12px; font-weight: 900; border: none; 
+            cursor: pointer; color: white; transition: 0.3s; font-size: 0.9rem;
+        }
+
+        .cases-grid { 
+            display: none; margin-top: 12px; grid-template-columns: 1fr; 
+            gap: 10px; animation: fadeIn 0.4s ease forwards; 
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .case-box { 
+            background: rgba(232, 97, 7, 0.768); padding: 10px; 
+            border-radius: 12px; cursor: pointer; border: 1px dashed #db7909; 
+            text-decoration: none; color: white; font-weight: 700;
+            transition: 0.3s; display: block; font-size: 0.85rem;
+        }
+        .case-box:hover { background: #b9770c; transform: scale(1.03); }
+
+        /* بيانات الجامعة والكلية بوضوح */
+        .uni-info { text-align: right; line-height: 1.2; }
+        .uni-name { color: #dd730a; font-weight: 900; font-size: 1.1rem; display: block; }
+        .dept-name { color: #ffffff; font-weight: 700; font-size: 0.65rem; letter-spacing: 0.3px; }
+
+        /* استايل الأزرار الجديدة */
+        .new-interface-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.3s;
+            text-align: right;
+        }
+        .new-interface-btn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+
+    <div class="bg-animate" id="cells"></div>
+
+    <header class="glass-header">
+        <a href="/" class="back-nav"><i class="fas fa-sign-out-alt ml-1"></i> خروج</a>
+        <div class="uni-info">
+            <span class="uni-name">جامعة المعقل</span>
+            <span class="dept-name">كلية التقنيات الطبية</span>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-8 text-center">
+        <h1 class="text-3xl font-black text-orange-500 mb-5">مختبر الفطريات الذكي</h1>
+        
+        <div class="inline-block mb-8">
+            <div class="bg-white/5 px-7 py-3 rounded-[30px] border border-orange-500/20 shadow-xl">
+                <p class="text-lg font-bold">
+                    أهلاً . <span class="text-orange-500 font-black">{{ student_name }}</span>، اختر الفئة السريرية لبدء الفحص المجهري.
+                </p>
+            </div>
+        </div>
+
+        <div id="main-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            
+            <div class="category-card" data-order="1">
+                <i class="fas fa-microscope text-3xl text-orange-500 mb-3"></i>
+                <h3 class="text-lg font-black">Superficial</h3>
+                <button onclick="toggleCases('f1')" class="btn-enter">دخول للفئة</button>
+                <div id="f1" class="cases-grid">
+                    <a href="/lab/superficial/T" class="case-box">Case – Unknown Fungus T</a>
+                    <a href="/lab/superficial/BP" class="case-box">Case – Unknown Fungus BP</a>
+                </div>
+            </div>
+
+            <div class="category-card" data-order="2">
+                <i class="fas fa-hand-holding-medical text-3xl text-blue-500 mb-3"></i>
+                <h3 class="text-lg font-black">Subcutaneous</h3>
+                <button onclick="toggleCases('f2')" class="btn-enter">دخول للفئة</button>
+                <div id="f2" class="cases-grid">
+                    <a href="/lab/subcutaneous/M" class="case-box">Case – Unknown Fungus M</a>
+                    <a href="/lab/subcutaneous/S" class="case-box">Case – Unknown Fungus S</a>
+                </div>
+            </div>
+
+            <div class="category-card" data-order="3">
+                <i class="fas fa-lungs text-3xl text-red-500 mb-3"></i>
+                <h3 class="text-lg font-black">Systemic</h3>
+                <button onclick="toggleCases('f3')" class="btn-enter">دخول للفئة</button>
+                <div id="f3" class="cases-grid">
+                    <a href="/lab/systemic/P" class="case-box">Case – Unknown Fungus P</a>
+                    <a href="/lab/systemic/B" class="case-box">Case – Unknown Fungus B</a>
+                    <a href="/lab/systemic/C" class="case-box">Case – Unknown Fungus C</a>
+                </div>
+            </div>
+
+            <div class="category-card" data-order="4">
+                <i class="fas fa-biohazard text-3xl text-green-500 mb-3"></i>
+                <h3 class="text-lg font-black">Cutaneous</h3>
+                <button onclick="toggleCases('f4')" class="btn-enter">دخول للفئة</button>
+                <div id="f4" class="cases-grid">
+                    <a href="/lab/opportunistic/A" class="case-box">Case – Unknown Fungus A</a>
+                </div>
+            </div>
+
+        </div>
+
+        <hr class="border-orange-500/20 mb-10">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+            <button onclick="window.location.href='/biosafety'" class="new-interface-btn hover:border-orange-500">
+                <div class="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center text-orange-500">
+                    <i class="fas fa-shield-virus text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="font-black text-white">إجراءات السلامة </h4>
+                    <p class="text-[10px] text-zinc-500">تعليمات الحماية داخل المختبر</p>
+                </div>
+            </button>
+
+            <button onclick="window.location.href='/info_fungi'" class="new-interface-btn hover:border-blue-500">
+                <div class="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-500">
+                    <i class="fas fa-info-circle text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="font-black text-white">معلومات الفطريات</h4>
+                    <p class="text-[10px] text-zinc-500">الأرشيف العلمي والملفات المصورة</p>
+                </div>
+            </button>
+        </div>
+
+    </main>
+
+    <script>
+        // دالة خلط الكروت (Shuffle)
+        window.onload = function() {
+            const grid = document.getElementById('main-grid');
+            const cards = Array.from(grid.children);
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                grid.appendChild(cards[j]);
+            }
+        };
+
+        function toggleCases(id) {
+            document.querySelectorAll('.cases-grid').forEach(grid => {
+                if(grid.id !== id) grid.style.display = 'none';
+            });
+            const target = document.getElementById(id);
+            target.style.display = (target.style.display === 'grid') ? 'none' : 'grid';
+        }
+
+        const cellsContainer = document.getElementById('cells');
+        const icons = ['🦠', '🔬', '🧫'];
+        for(let i=0; i<30; i++) {
+            let div = document.createElement('div');
+            div.className = 'cell';
+            div.innerText = icons[Math.floor(Math.random() * icons.length)];
+            div.style.left = Math.random() * 95 + 'vw';
+            div.style.top = Math.random() * 95 + 'vh';
+            div.style.animationDelay = Math.random() * 12 + 's';
+            div.style.fontSize = "20px";
+            cellsContainer.appendChild(div);
+        }
+
+        const database = {
+            'T': {
+                case: "Circular, itchy, scaly skin lesions with central clearing. Often on body, scalp, or nails. May cause hair loss in affected area.",
+                steps: [
+                    { opts: ["Blood", "Urine", "CSF", "Sputum", "Skin scraping", "Hair", "Nail clippings"], correct: [4, 5, 6] },
+                    { opts: ["MacConkey agar", "Chocolate agar", "Nutrient agar", "Sabouraud Dextrose Agar (SDA)", "Mannitol Salt agar", "Lowenstein-Jensen"], correct: [3] },
+                    { temp: [25, 30] },
+                    { opts: ["Mucoid colony", "Metallic sheen", "Powdery white colony", "Yellow smooth colony", "Beta-hemolytic colony"], correct: [2], img: "https://upload.wikimedia.org/wikipedia/commons/2/2e/Trichophyton_rubrum_01.jpg" },
+                    { opts: ["Gram-negative bacilli", "Acid-fast bacilli", "Septate hyphae + microconidia (Dermatophytes)", "Encapsulated yeast", "Broad non‑septate hyphae"], correct: [2], img: "https://upload.wikimedia.org/wikipedia/commons/b/b5/Microsporum_gypseum_01.jpg", diag: "Tinea" }
+                ]
+            },
+            'BP': {
+                case: "Chronic cough, weight loss, painful oral ulcers.",
+                steps: [
+                    { opts: ["Blood", "Urine", "Stool", "Hair", "Sputum / Oral lesion scraping / Tissue biopsy"], correct: [4] },
+                    { opts: ["MacConkey agar", "Blood agar", "Sabouraud Dextrose Agar (SDA)", "EMB"], correct: [2] },
+                    { temp: [25, 37] },
+                    { opts: ["Only yeast growth", "Only bacterial growth", "Dimorphic growth (mold at 25 °C / yeast at 37 °C)"], correct: [2], img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Paracoccidioides_brasiliensis.jpg/1200px-Paracoccidioides_brasiliensis.jpg" },
+                    { opts: ["Capsule", "Intracellular yeast", "Broad-based budding", "Multiple budding yeast (pilot wheel / captain’s wheel appearance)"], correct: [3], img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Paracoccidioides_brasiliensis.jpg/1200px-Paracoccidioides_brasiliensis.jpg", diag: "Paracoccidioidomycosis" }
+                ]
+            },
+            'P': {
+                case: "Middle-aged male farmer from rural South America presents with: Chronic cough, weight loss, painful oral ulcers.",
+                steps: [
+                    { opts: ["Blood", "Urine", "Stool", "Hair", "Sputum / Oral lesion scraping / Tissue biopsy"], correct: [4] },
+                    { opts: ["MacConkey agar", "Blood agar", "Sabouraud Dextrose Agar (SDA)", "EMB"], correct: [2] },
+                    { temp: [25, 37] },
+                    { opts: ["Only yeast growth", "Only bacterial growth", "Dimorphic growth (mold at 25 °C / yeast at 37 °C)"], correct: [2], img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Paracoccidioides_brasiliensis.jpg/1200px-Paracoccidioides_brasiliensis.jpg" },
+                    { opts: ["Capsule", "Intracellular yeast", "Broad-based budding", "Multiple budding yeast (pilot wheel / captain’s wheel appearance)"], correct: [3], img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Paracoccidioides_brasiliensis.jpg/1200px-Paracoccidioides_brasiliensis.jpg", diag: "Paracoccidioidomycosis" }
+                ]
+            },
+
+            'B': {
+                case: "Chronic pneumonia-like illness. Fever, cough, weight loss. May have skin lesions: verrucous plaques.",
+                steps: [
+                    { opts: ["Blood", "Urine", "CSF", "Hair", "Sputum", "Skin biopsy"], correct: [4, 5] },
+                    { opts: ["MacConkey agar", "Blood agar", "Sabouraud Dextrose Agar (SDA)"], correct: [2] },
+                    { temp: [25, 37] },
+                    { opts: ["Creamy yeast", "White fluffy mold", "Black colony", "Dimorphic growth: white fluffy mold at 25 °C, creamy yeast at 37 °C"], correct: [3], img: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Blastomyces_dermatitidis.jpg" },
+                    { opts: ["Encapsulated yeast", "Intracellular yeast", "Spherules", "Broad-based budding yeast", "Septate hyphae"], correct: [3], img: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Blastomyces_dermatitidis.jpg", diag: "Blastomycosis" }
+                ]
+            },
+
+            'A': {
+                case: "Chronic cough, weight loss, painful oral ulcers.",
+                steps: [
+                    { opts: ["Blood", "Urine", "Stool", "Hair", "Sputum / Oral lesion scraping / Tissue biopsy"], correct: [4] },
+                    { opts: ["MacConkey agar", "Blood agar", "Sabouraud Dextrose Agar (SDA)", "EMB"], correct: [2] },
+                    { temp: [25, 37] },
+                    { opts: ["Only yeast growth", "Only bacterial growth", "Dimorphic growth (mold at 25 °C / yeast at 37 °C)"], correct: [2], img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Paracoccidioides_brasiliensis.jpg/1200px-Paracoccidioides_brasiliensis.jpg" },
+                    { opts: ["Capsule", "Intracellular yeast", "Broad-based budding", "Multiple budding yeast (pilot wheel / captain’s wheel appearance)"], correct: [3], img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Paracoccidioides_brasiliensis.jpg/1200px-Paracoccidioides_brasiliensis.jpg", diag: "Paracoccidioidomycosis" }
+                ]
+            }
+        };
+    </script>
+</body>
+</html>
