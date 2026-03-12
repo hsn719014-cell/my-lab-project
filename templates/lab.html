@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Mycology Lab System v11.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;900&display=swap');
+        
+        :root {
+            --neon: #f39c12;
+            --bg: #020202;
+            --accent: #e67e22;
+        }
+
+        body {
+            background: var(--bg);
+            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .cyber-header {
+            background: rgba(10,10,10,0.98);
+            border-bottom: 2px solid var(--neon);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .btn-back-main {
+            background: linear-gradient(135deg, #d35400, #e67e22);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 800;
+        }
+
+        .admin-trigger {
+            background: #0a0a0a;
+            color: var(--neon);
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            font-size: 1.2rem;
+            box-shadow: 0 0 15px rgba(243,156,18,0.1);
+        }
+
+        .admin-trigger::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            border: 2px solid var(--neon);
+            animation: pulse 2.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+
+        .thermo-master {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 40px 10px;
+            justify-content: center;
+        }
+
+        .thermo-axis-ext {
+            height: 300px;
+            display: flex;
+            flex-direction: column-reverse;
+            justify-content: space-between;
+            border-right: 2px solid #333;
+            padding-right: 10px;
+        }
+
+        .scale-point {
+            font-family: 'Orbitron';
+            font-size: 8px;
+            color: #555;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            width: 40px;
+        }
+
+        .scale-point.bold-pt {
+            color: #999;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .scale-point::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            width: 8px;
+            height: 1px;
+            background: #333;
+        }
+
+        .thermo-glass {
+            width: 26px;
+            height: 300px;
+            background: #0a0a0a;
+            border-radius: 30px;
+            position: relative;
+            border: 2px solid #222;
+            box-shadow: inset 0 0 10px #000;
+        }
+
+        .mercury-flow {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to top, #ff3333, #ff0000);
+            border-radius: 30px;
+            transition: 0.5s;
+        }
+
+        .station-card {
+            background: #080808;
+            border: 1px solid #151515;
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 40px;
+            opacity: 0.1;
+            pointer-events: none;
+            transition: 0.6s ease;
+        }
+
+        .station-active {
+            opacity: 1;
+            pointer-events: auto;
+            border-color: #3498db;
+        }
+
+        .option-box {
+            background: #111;
+            border: 2px solid #222;
+            padding: 18px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.2s;
+        }
+
+        .option-box.selected {
+            border-color: var(--neon);
+            background: rgba(243,156,18,0.1);
+            color: var(--neon);
+        }
+
+        .btn-next {
+            background: var(--neon);
+            color: #000;
+            font-weight: 900;
+            padding: 20px;
+            width: 100%;
+            border-radius: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-next:disabled {
+            background: #1a1a1a;
+            color: #444;
+        }
+
+        .img-display-area {
+            width: 100%;
+            max-width: 300px;
+            aspect-ratio: 1/1;
+            mx-auto: auto;
+            background: #090909;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 2px solid #1a1a1a;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .img-display-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        #doctor-panel {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
+            z-index: 9999;
+            display: none;
+            overflow-y: auto;
+            padding: 20px;
+            border: 5px solid #1a1a1a;
+        }
+
+        .doctor-card-header {
+            background: linear-gradient(90deg, #1a1a1a, #0a0a0a);
+            border: 1px solid #333;
+            border-bottom: 3px solid #e67e22;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .student-log {
+            background: #0c0c0c;
+            border: 1px solid #1a1a1a;
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--accent);
+            position: relative;
+        }
+
+        .trash-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: #ff4d4d;
+        }
+
+        #final-screen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 10001;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<header class="cyber-header">
+    <div class="flex items-center gap-4">
+        <button onclick="window.location.href='/dashboard'" class="btn-back-main"><i class="fas fa-arrow-left"></i></button>
+        <div class="flex flex-col">
+            <span class="text-[10px] text-zinc-500 font-black uppercase tracking-[0.2em] italic">الطالب :</span>
+            <span class="text-sm font-black text-white uppercase" id="user-display">LOADING...</span>
+        </div>
+    </div>
+    <button onclick="openDoctorMode()" class="admin-trigger">
+        <i class="fas fa-user-md-slash"></i>
+        <div class="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full border-2 border-black animate-ping"></div>
+        <i class="fas fa-user-graduate absolute text-[10px] bottom-1"></i>
+    </button>
+</header>
+
+<div class="max-w-2xl mx-auto p-5 pt-10 pb-40">
+    <div class="bg-zinc-900/40 border-l-4 border-orange-500 p-8 mb-12 rounded-2xl shadow-xl">
+        <div class="flex items-center gap-3 mb-4">
+            <i class="fas fa-notes-medical text-orange-500"></i>
+            <h3 class="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Patient Case File</h3>
+        </div>
+        <p id="case-text" class="text-zinc-100 italic text-lg leading-relaxed"></p>
+    </div>
+
+    <section id="step-1" class="station-card station-active">
+        <h2 class="text-xl font-black text-white mb-8 uppercase flex items-center gap-4"><span class="w-10 h-10 bg-orange-500 text-black rounded-lg flex items-center justify-center text-lg">01</span> Specimen</h2>
+        <div id="grid-1" class="grid grid-cols-1 gap-3 mb-10"></div>
+        <button id="btn-1" onclick="toStep(2)" class="btn-next" disabled>Validate Specimen</button>
+    </section>
+
+    <section id="step-2" class="station-card">
+        <h2 class="text-xl font-black text-blue-400 mb-8 uppercase flex items-center gap-4"><span class="w-10 h-10 bg-blue-400 text-black rounded-lg flex items-center justify-center text-lg">02</span> Culture</h2>
+        <div id="grid-2" class="grid grid-cols-1 gap-3 mb-10"></div>
+        <button id="btn-2" onclick="toStep(3)" class="btn-next" disabled>Inoculate Media</button>
+    </section>
+
+    <section id="step-3" class="station-card">
+        <h2 class="text-xl font-black text-yellow-500 mb-8 uppercase flex items-center gap-4"><span class="w-10 h-10 bg-yellow-500 text-black rounded-lg flex items-center justify-center text-lg">03</span> Incubation</h2>
+        <div class="thermo-master">
+            <div class="thermo-axis-ext" id="ext-ticks"></div>
+            <div class="thermo-glass"><div id="merc-fill" class="mercury-flow" style="height: 0%;"></div></div>
+            <div class="flex-1 ml-10 text-center">
+                <div class="text-7xl font-black text-white" id="deg-num">0</div>
+                <div class="text-orange-500 font-bold uppercase tracking-widest text-[9px] mt-2 mb-10">Degrees Celsius</div>
+                <input type="range" min="0" max="50" value="0" class="w-full accent-orange-500 scale-125" id="deg-slide">
+            </div>
+        </div>
+        <button id="btn-3" onclick="toStep(4)" class="btn-next mt-10" disabled>Set Temp</button>
+    </section>
+
+    <section id="step-4" class="station-card">
+        <h2 class="text-xl font-black text-green-400 mb-8 uppercase flex items-center gap-4"><span class="w-10 h-10 bg-green-400 text-black rounded-lg flex items-center justify-center text-lg">04</span> Colony</h2>
+        <div class="img-display-area">
+            <img id="colony-img-viewer" class="hidden" src="" alt="Colony">
+            <i id="colony-placeholder" class="fas fa-eye text-4xl text-zinc-800"></i>
+        </div>
+        <div id="grid-4" class="grid grid-cols-1 gap-3 mb-10"></div>
+        <button id="btn-4" onclick="toStep(5)" class="btn-next" disabled>Confirm Morphology</button>
+    </section>
+
+    <section id="step-5" class="station-card">
+        <h2 class="text-xl font-black text-purple-400 mb-8 uppercase flex items-center gap-4"><span class="w-10 h-10 bg-purple-400 text-black rounded-lg flex items-center justify-center text-lg">05</span> Microscopy</h2>
+        <div class="img-display-area">
+            <img id="micro-img-viewer" class="hidden" src="" alt="Microscopy">
+            <i id="micro-placeholder" class="fas fa-microscope text-4xl text-zinc-800"></i>
+        </div>
+        <div id="grid-5" class="grid grid-cols-1 gap-3 mb-10"></div>
+        <button id="btn-5" onclick="sendFinal()" class="btn-next" disabled>Finish Lab Test</button>
+    </section>
+</div>
+
+<div id="doctor-panel">
+    <div class="doctor-card-header">
+        <div class="flex items-center gap-5">
+            <div class="w-16 h-16 bg-orange-500/20 rounded-full flex items-center justify-center text-orange-500 border border-orange-500/30">
+                <i class="fas fa-user-md text-3xl"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-black text-white tracking-tighter uppercase italic">Medical Professor Panel</h2>
+                <p class="text-[10px] text-zinc-500 font-bold tracking-[0.2em]">CLINICAL MYCOLOGY SUPERVISOR</p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="clearSheet()" class="bg-red-600/10 text-red-500 px-4 py-2 rounded-xl text-[9px] font-black border border-red-500/30">PURGE ALL</button>
+            <button onclick="closeDocPanel()" class="bg-zinc-800 text-white px-5 py-2 rounded-xl text-[9px] font-black border border-zinc-700">CLOSE</button>
+        </div>
+    </div>
+    <div class="px-2">
+        <div class="flex items-center gap-3 mb-6 opacity-60">
+            <i class="fas fa-graduation-cap text-orange-500 text-xl"></i>
+            <span class="text-[10px] font-black tracking-widest text-zinc-300 italic">STUDENT PERFORMANCE RECORDS</span>
+            <div class="flex-1 h-[1px] bg-zinc-800/50"></div>
+        </div>
+        <div id="doc-list" class="space-y-4"></div>
+    </div>
+</div>
+
+<div id="final-screen">
+    <div class="w-24 h-24 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center text-4xl mb-8 border border-green-500/30"><i class="fas fa-check-circle"></i></div>
+    <h2 class="text-3xl font-black text-white mb-4 uppercase tracking-tighter">Lab Report Sent!</h2>
+    <p class="text-zinc-500 mb-12 text-sm italic">تم إرسال جوابك إلى الدكتور بنجاح</p>
+    <button onclick="window.location.href='/dashboard'" class="bg-white text-black font-black px-12 py-4 rounded-2xl uppercase tracking-widest text-sm">Back to Dashboard</button>
+</div>
+
+<div id="global-load" class="fixed inset-0 bg-black/98 z-[20000] hidden flex flex-col items-center justify-center">
+    <div class="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+</div>
+
+<script>
+    const API_URL = "https://sheetdb.io/api/v1/ih42q3c0e0ope";
+
+    const database = {
+        'T': {
+            case: "Circular, itchy, scaly skin lesions with central clearing. Often on body, scalp, or nails. May cause hair loss in affected area.",
+            steps: [
+                { opts: ["Blood", "Urine", "CSF", "Sputum", "Skin scraping", "Hair", "Nail clippings"], correct: [4, 5, 6] },
+                { opts: ["MacConkey agar", "Chocolate agar", "Nutrient agar", "Sabouraud Dextrose Agar (SDA)", "Mannitol Salt agar", "Lowenstein-Jensen"], correct: [3] },
+                { temp: [25, 30] },
+                { opts: ["Mucoid colony", "Metallic sheen", "Powdery white colony", "Yellow smooth colony", "Beta-hemolytic colony"], correct: [2] },
+                { opts: ["Gram-negative bacilli", "Acid-fast bacilli", "Septate Hyphae + Microconidia (Dermatophytes)", "Encapsulated yeast", "Broad non-septate hyphae"], correct: [2], diag: "superficial | Case – Unknown Fungus T" }
+            ]
+        },
+        'BP': {
+            case: "Hard black nodules attached to hair shafts. Usually asymptomatic, rarely itchy. Commonly affects scalp, beard, or pubic hair.",
+            steps: [
+                { opts: ["Blood", "Urine", "CSF", "Hair shaft"], correct: [3] },
+                { opts: ["MacConkey agar", "Blood agar", "Sabouraud Dextrose Agar (SDA)", "EMB"], correct: [2] },
+                { temp: [25] },
+                { opts: ["Creamy colony", "Mucoid colony", "Black slow-growing colony"], correct: [2] },
+                { opts: ["Budding yeast", "Spherules", "Dark septate hyphae + ascospores"], correct: [2], diag: "superficial | Case – Unknown Fungus BP" }
+            ]
+        },
+        'M': {
+            case: "Chronic swelling of foot or hand. Draining sinuses with black granules. History: thorn injury or trauma in rural area.",
+            steps: [
+                { opts: ["Pus / Biopsy", "CSF", "Stool", "Hair"], correct: [0] },
+                { opts: ["MacConkey agar", "Blood agar", "Sabouraud Dextrose Agar (SDA)"], correct: [2] },
+                { temp: [25, 37] },
+                { opts: ["Creamy yeast colony", "Mucoid colony", "Black granular colony"], correct: [2] },
+                { opts: ["Capsule", "Broad budding yeast", "Septate hyphae with grains"], correct: [2], diag: "subctoneass | Case – Unknown Fungus M" }
+            ]
+        },
+        'S': {
+            case: "Skin ulcer or nodule following thorn injury. Lesions follow lymphatic channels (lymphocutaneous spread).",
+            steps: [
+                { opts: ["Pus / Biopsy", "CSF", "Blood"], correct: [0] },
+                { opts: ["MacConkey agar", "EMB", "Sabouraud Dextrose Agar (SDA)"], correct: [2] },
+                { temp: [25, 37] },
+                { opts: ["Only yeast", "Only bacteria", "Dimorphic growth"], correct: [2] },
+                { opts: ["Spherules", "Capsule", "Cigar-shaped budding yeast", "Broad budding"], correct: [2], diag: "subctoneass | Case – Unknown Fungus S" }
+            ]
+        },
+        'P': {
+            case: "Middle-aged male farmer from rural South America presents with: Chronic cough, weight loss, painful oral ulcers.",
+            steps: [
+                { opts: ["Blood", "Urine", "Stool", "Hair", "Sputum / Oral lesion scraping / Tissue biopsy"], correct: [4] },
+                { opts: ["MacConkey agar", "Blood agar", "Sabouraud Dextrose Agar (SDA)", "EMB"], correct: [2] },
+                { temp: [25, 37] },
+                { opts: ["Only yeast growth", "Only bacterial growth", "Dimorphic growth (mold at 25°C / yeast at 37°C)", "Black granular colony"], correct: [2] },
+                { opts: ["Capsule", "Intracellular yeast", "Broad-based budding", "Multiple budding yeast (pilot wheel / captain’s wheel appearance)"], correct: [3], diag: "Systemic mycoss | Case – Unknown Fungus P" }
+            ]
+        },
+        'B': {
+            case: "Chronic pneumonia-like illness. Fever, cough, weight loss. May have skin lesions: verrucous plaques.",
+            steps: [
+                { opts: ["Blood", "Urine", "CSF", "Hair", "Sputum", "Skin biopsy"], correct: [4, 5] },
+                { opts: ["MacConkey agar", "Blood agar", "Sabouraud Dextrose Agar (SDA)"], correct: [2] },
+                { temp: [25, 37] },
+                { opts: ["Creamy yeast", "Dimorphic growth: white fluffy mold at 25°C, creamy yeast at 37°C", "Black colony", "Green powdery colony"], correct: [1] },
+                { opts: ["Encapsulated yeast", "Intracellular yeast", "Spherules", "Broad-based budding yeast", "Septate hyphae"], correct: [3], diag: "Systemic mycoss | Case – Unknown Fungus B" }
+            ]
+        },
+        'C': {
+            case: "Immunocompromised (HIV). Severe headache, fever, nausea. Meningitis signs (neck stiffness, photophobia).",
+            steps: [
+                { opts: ["Blood", "Urine", "CSF", "Skin scraping", "Stool"], correct: [2] },
+                { opts: ["Blood agar", "MacConkey agar", "Sabouraud Dextrose Agar (SDA)"], correct: [0, 2] },
+                { temp: [37] },
+                { opts: ["Mucoid colony", "Powdery colony", "Creamy colony"], correct: [0] },
+                { opts: ["Broad budding yeast", "Spherules", "Septate hyphae", "Encapsulated budding yeast (India ink positive)"], correct: [3], diag: "Systemic mycoss | Case – Unknown Fungus C" }
+            ]
+        },
+        'A': {
+            case: "Immunocompromised. Fever, cough, hemoptysis. Risk factor: neutropenia or corticosteroid therapy.",
+            steps: [
+                { opts: ["Blood", "Urine", "CSF", "Sputum", "Tissue biopsy (lung, sinus)"], correct: [3, 4] },
+                { opts: ["MacConkey agar", "Blood agar", "Nutrient agar", "Sabouraud Dextrose Agar (SDA)", "Brain Heart Infusion Agar"], correct: [3] },
+                { temp: [25, 30, 37] },
+                { opts: ["Mucoid colony", "Creamy yeast colony", "Greenish, powdery colony", "Black colony"], correct: [2] },
+                { opts: ["Broad budding yeast", "Encapsulated yeast", "Spherules", "Septate hyphae (acute 45° angle branching)", "Arthroconidia"], correct: [3], diag: "Cutaneous | Case – Unknown Fungus A" }
+            ]
+        }
+    };
+
+    let selections = [[], [], 0, [], []];
+    const fungusID = "{{ fungus_id }}" || 'T';
+    const studentName = "{{ student_name }}" || 'Student';
+    const studentMail = "{{ student_email }}" || 'guest@edu.iq';
+    const activeCase = database[fungusID];
+
+    function getImagePath(stepNum, optionText) {
+        let cat = "";
+        if (fungusID === 'T') cat = "superficial";
+        else if (fungusID === 'M' || fungusID === 'S') cat = "subctoneass";
+        else if (['P', 'B', 'C', 'A'].includes(fungusID)) cat = "Systemic mycoss";
+        else if (fungusID === 'BP') cat = "Cutaneous";
+        const stepF = (stepNum === 4) ? "Colony" : "Microscopy";
+        return encodeURI(`/images/${cat}/Case – Unknown Fungus ${fungusID}/${stepF}/${optionText.trim()}`);
+    }
+
+    function tryImageExtensions(basePath, callback) {
+        const exts = [".JPG", ".jpg", ".png"];
+        let idx = 0;
+        function tryNext() {
+            if (idx >= exts.length) { callback(""); return; }
+            const path = basePath + exts[idx];
+            const img = new Image();
+            img.onload = () => callback(path);
+            img.onerror = () => { idx++; tryNext(); };
+            img.src = path;
+        }
+        tryNext();
+    }
+
+    function startLab() {
+        document.getElementById('user-display').innerText = studentName;
+        document.getElementById('case-text').innerText = activeCase.case;
+        drawScale();
+        populateGrids();
+    }
+
+    function drawScale() {
+        const container = document.getElementById('ext-ticks');
+        for(let i=0; i<=50; i++) {
+            const el = document.createElement('div');
+            el.className = `scale-point ${i % 5 === 0 ? 'bold-pt' : ''}`;
+            el.innerHTML = i % 5 === 0 ? `<span>${i}°C</span>` : '';
+            container.appendChild(el);
+        }
+    }
+
+    document.getElementById('deg-slide').oninput = function() {
+        const val = parseInt(this.value);
+        document.getElementById('deg-num').innerText = val;
+        document.getElementById('merc-fill').style.height = (val * 2) + '%';
+        selections[2] = val;
+        document.getElementById('btn-3').disabled = val === 0;
+    };
+
+    function populateGrids() {
+        [1,2,4,5].forEach(num => {
+            const grid = document.getElementById(`grid-${num}`);
+            activeCase.steps[num-1].opts.forEach((label, idx) => {
+                const box = document.createElement('div');
+                box.className = 'option-box';
+                box.innerHTML = `<i class="far fa-circle"></i> <span>${label}</span>`;
+                box.onclick = () => {
+                    grid.querySelectorAll('.option-box').forEach(b => b.classList.remove('selected'));
+                    box.classList.add('selected');
+                    selections[num-1] = [idx];
+                    if(num === 4 || num === 5) {
+                        const viewerId = (num === 4) ? 'colony-img-viewer' : 'micro-img-viewer';
+                        const placeholderId = (num === 4) ? 'colony-placeholder' : 'micro-placeholder';
+                        const img = document.getElementById(viewerId);
+                        const placeholder = document.getElementById(placeholderId);
+                        tryImageExtensions(getImagePath(num, label), (path) => {
+                            if(path) { img.src = path; img.classList.remove('hidden'); placeholder.classList.add('hidden'); }
+                            else { img.classList.add('hidden'); placeholder.classList.remove('hidden'); }
+                        });
+                    }
+                    document.getElementById(`btn-${num}`).disabled = false;
+                };
+                grid.appendChild(box);
+            });
+        });
+    }
+
+    function toStep(n) {
+        document.getElementById(`step-${n-1}`).style.opacity = '0.2';
+        document.getElementById(`step-${n-1}`).classList.remove('station-active');
+        const next = document.getElementById(`step-${n}`);
+        if(next) { next.classList.add('station-active'); window.scrollTo({ top: next.offsetTop - 120, behavior: 'smooth' }); }
+    }
+
+    async function sendFinal() {
+        document.getElementById('global-load').classList.remove('hidden');
+        let errorCount = 0;
+        activeCase.steps.forEach((step, i) => {
+            if(i === 2) { if(!step.temp.some(t => Math.abs(selections[i] - t) <= 2)) errorCount++; }
+            else { if(!step.correct.includes(selections[i][0])) errorCount++; }
+        });
+        const timeNow = new Date();
+        const dataRow = {
+            student: studentName,
+            email: studentMail,
+            case_id: activeCase.steps[4].diag,
+            status: errorCount === 0 ? "PASSED ✅" : "FAILED ❌",
+            timestamp: timeNow.toLocaleTimeString('en-GB'),
+            date: timeNow.toLocaleDateString('en-GB')
+        };
+        try {
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: [dataRow] })
+            });
+            document.getElementById('global-load').classList.add('hidden');
+            document.getElementById('final-screen').style.display = 'flex';
+        } catch(e) { 
+            document.getElementById('global-load').classList.add('hidden');
+            document.getElementById('final-screen').style.display = 'flex';
+        }
+    }
+
+    async function openDoctorMode() {
+        const pin = prompt("🔐 Medical Supervisor Key:");
+        if(pin === "Dr1234") { document.getElementById('doctor-panel').style.display = 'block'; loadDataRows(); }
+        else if (pin !== null) alert("⚠️ ACCESS DENIED: Incorrect Professor Credentials");
+    }
+
+    async function loadDataRows() {
+        const list = document.getElementById('doc-list');
+        list.innerHTML = '<div class="text-zinc-700 text-center py-10 font-black italic animate-pulse">Establishing Secure Connection...</div>';
+        try {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+            list.innerHTML = data.reverse().map((row) => `
+                <div class="student-log border-r-4 border-orange-500/20">
+                    <button onclick="deleteRecord('${row.student}')" class="trash-btn hover:text-red-400"><i class="fas fa-trash-alt"></i></button>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-user-circle text-orange-500 text-xs"></i>
+                            <h4 class="font-black text-white text-sm uppercase">${row.student}</h4>
+                        </div>
+                        <div class="flex items-center gap-2 opacity-80">
+                            <i class="fas fa-microscope text-zinc-500 text-[10px]"></i>
+                            <span class="text-[10px] text-zinc-300 font-bold uppercase tracking-wider">${row.case_id || 'N/A'}</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between mt-4 text-[9px] font-bold border-t border-zinc-800 pt-3">
+                        <span class="text-zinc-600 italic tracking-widest">${row.date} | ${row.timestamp}</span>
+                        <span class="${row.status && row.status.includes('PASSED') ? 'text-green-500' : 'text-red-500'} px-2 py-0.5 bg-zinc-900 border border-zinc-800 rounded shadow-sm">${row.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        } catch(e) { list.innerHTML = '<div class="text-red-600 text-center py-10 font-black">UNABLE TO RETRIEVE RECORDS</div>'; }
+    }
+
+    function closeDocPanel() { document.getElementById('doctor-panel').style.display = 'none'; }
+    function clearSheet() { if(confirm("⚠️ SYSTEM OVERRIDE: Delete all performance data?")) fetch(`${API_URL}/all`, {method:'DELETE'}).then(loadDataRows); }
+    function deleteRecord(n) { if(confirm(`Confirm deletion for student: ${n}?`)) fetch(`${API_URL}/student/${n}`, {method:'DELETE'}).then(loadDataRows); }
+
+    startLab();
+</script>
+
+</body>
+</html>
