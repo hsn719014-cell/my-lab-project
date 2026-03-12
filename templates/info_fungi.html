@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fungi Information</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #020202; color: #e0e0e0; font-family: 'Inter', sans-serif; }
+        .info-card { background: #0a0a0a; border-left: 4px solid #3498db; border-radius: 0 1rem 1rem 0; }
+        .download-btn { background: linear-gradient(to right, #2980b9, #3498db); color: #fff; }
+    </style>
+</head>
+<body class="p-4 pb-24">
+    <header class="flex items-center justify-between mb-6 p-4 bg-zinc-900/50 border-b border-blue-500 rounded-xl">
+        <button onclick="window.location.href='/dashboard'" class="text-blue-500 text-xl"><i class="fas fa-arrow-left"></i></button>
+        <h1 class="font-black text-white italic text-sm tracking-wider uppercase">Fungi Archive</h1>
+        <i class="fas fa-microscope text-blue-500"></i>
+    </header>
+
+    <div class="mb-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl">
+        <h3 class="text-blue-400 font-bold text-sm mb-3 underline">Laboratory Guide (PDF)</h3>
+        <a href="/static/files/fungi_guide.pdf" download class="download-btn w-full py-3 rounded-xl flex items-center justify-center gap-3 font-black text-xs uppercase shadow-lg shadow-blue-500/20">
+            <i class="fas fa-file-download text-lg"></i> Download Full Reference
+        </a>
+    </div>
+
+    <div class="space-y-6" id="info-grid">
+        <script>
+            const infoGrid = document.getElementById('info-grid');
+            for (let i = 1; i <= 20; i++) {
+                infoGrid.innerHTML += `
+                    <div class="info-card p-4 shadow-xl border border-zinc-800/50">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-8 h-8 bg-blue-500/20 rounded flex items-center justify-center text-blue-400 text-[10px] font-black italic">
+                                DATA ${i}
+                            </div>
+                            <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Scientific Information Card</p>
+                        </div>
+                        <img src="/static/images/info/info${i}.JPG" class="w-full h-auto rounded-lg border border-zinc-800" alt="Fungi Info ${i}" onerror="this.parentElement.style.display='none'">
+                    </div>
+                `;
+            }
+        </script>
+    </div>
+
+    <button onclick="window.location.href='/dashboard'" class="fixed bottom-6 right-6 bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center text-xl shadow-[0_0_20px_rgba(52,152,219,0.5)] z-50">
+        <i class="fas fa-th-large"></i>
+    </button>
+</body>
+</html>
