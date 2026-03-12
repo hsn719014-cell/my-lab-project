@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مختبر الفطريات الذكي | جامعة المعقل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        
+        /* التنسيقات العامة للجسم */
+        body { 
+            background: #020202; 
+            color: white; 
+            font-family: 'Cairo', sans-serif; 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            margin: 0;
+        }
+
+        /* خلفية الفطريات المتحركة */
+        .microbe-bg {
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            z-index: 1; 
+            pointer-events: none;
+        }
+        .fungus {
+            position: absolute; 
+            font-size: 2.5rem; 
+            filter: drop-shadow(0 0 8px rgba(230, 126, 34, 0.6));
+            animation: moveAround 15s infinite ease-in-out;
+            opacity: 0.85;
+            user-select: none;
+        }
+        @keyframes moveAround {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(70px, -50px) rotate(120deg); }
+            66% { transform: translate(-50px, 70px) rotate(240deg); }
+        }
+
+        /* رسم شعار الجامعة */
+        .logo-section {
+            position: relative;
+            margin-top: -10px; 
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .uni-logo-draw {
+            width: 110px; 
+            height: 110px;
+            border: 2px solid #e67e22;
+            border-radius: 50%;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            background: rgba(230, 126, 34, 0.05);
+            box-shadow: 0 0 20px rgba(230, 126, 34, 0.2);
+        }
+        .roof { 
+            width: 50px; 
+            height: 0; 
+            border-left: 25px solid transparent; 
+            border-right: 25px solid transparent; 
+            border-bottom: 20px solid #e67e22; 
+        }
+        .columns-area { 
+            width: 45px; 
+            height: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            border-top: 3px solid #e67e22; 
+            margin-top: 2px;
+        }
+        .col-stick { 
+            width: 4px; 
+            height: 100%; 
+            background: #e67e22; 
+        }
+        .bottom-base { 
+            width: 60px; 
+            height: 4px; 
+            background: #e67e22; 
+            margin-top: 2px; 
+        }
+        .uni-name-label { 
+            font-size: 11px; 
+            font-weight: 900; 
+            color: #e67e22; 
+            margin-top: 10px; 
+        }
+
+        /* تصميم الكارت الزجاجي */
+        .glass-card { 
+            position: relative; 
+            z-index: 10; 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(40px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 45px; 
+            padding: 2.5rem; 
+            width: 94%; 
+            max-width: 470px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.9);
+            text-align: center;
+        }
+
+        .sup-badge {
+            background: rgba(230, 126, 34, 0.1); 
+            border: 1px solid #e67e22;
+            color: #e67e22; 
+            padding: 10px 20px; 
+            border-radius: 12px;
+            font-weight: 800; 
+            font-size: 13px; 
+            margin-bottom: 15px; 
+            display: inline-block;
+            line-height: 1.6;
+        }
+
+        /* تنسيق المدخلات */
+        .input-wrapper { 
+            position: relative; 
+            margin-bottom: 18px; 
+            width: 100%; 
+        }
+        .input-wrapper i.field-icon { 
+            position: absolute; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            color: #e67e22; 
+            font-size: 1.2rem; 
+        }
+        .input-wrapper i.eye-icon { 
+            position: absolute; 
+            left: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            cursor: pointer; 
+            color: #aaa; 
+            font-size: 1.1rem; 
+            z-index: 20; 
+        }
+        
+        input { 
+            background: rgba(255,255,255,0.05) !important; 
+            border: 1px solid rgba(255,255,255,0.1) !important; 
+            width: 100%; 
+            padding: 1.2rem 3.5rem; 
+            border-radius: 20px; 
+            outline: none; 
+            color: white; 
+            text-align: center; 
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: #e67e22 !important;
+            background: rgba(255,255,255,0.1) !important;
+            box-shadow: 0 0 15px rgba(230, 126, 34, 0.2);
+        }
+
+        /* زر الدخول */
+        .login-btn {
+            width: 100%; 
+            background: linear-gradient(90deg, #d35400, #e67e22);
+            border-radius: 20px; 
+            font-weight: 900; 
+            padding: 1.2rem; 
+            color: white;
+            box-shadow: 0 10px 25px rgba(230, 126, 34, 0.3); 
+            margin-top: 10px;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(230, 126, 34, 0.4);
+        }
+
+        /* التذييل */
+        .contact-footer { 
+            margin-top: 30px; 
+            border-top: 1px solid rgba(255,255,255,0.05); 
+            padding-top: 20px; 
+        }
+        .ig-btn { 
+            font-size: 3rem; 
+            color: #E1306C; 
+            transition: 0.4s; 
+            display: inline-block; 
+        }
+        .ig-btn:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+        .blue-label { 
+            color: #00d2ff !important; 
+            font-size: 11px; 
+            font-weight: 900; 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+        }
+
+        /* رسالة الخطأ */
+        .error-notif { 
+            color: #ff4757; 
+            font-size: 13px; 
+            font-weight: 900; 
+            margin-bottom: 15px; 
+            animation: shake 0.5s; 
+            display: block;
+        }
+        @keyframes shake { 
+            0%, 100% { transform: translateX(0); } 
+            25% { transform: translateX(-5px); } 
+            75% { transform: translateX(5px); } 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="microbe-bg" id="microbeContainer"></div>
+
+    <div class="glass-card">
+        <div class="logo-section">
+            <div class="uni-logo-draw">
+                <div class="roof"></div>
+                <div class="columns-area">
+                    <div class="col-stick"></div><div class="col-stick"></div><div class="col-stick"></div><div class="col-stick"></div><div class="col-stick"></div>
+                </div>
+                <div class="bottom-base"></div>
+            </div>
+            <span class="uni-name-label" id="uniLabel">جامعة المعقل</span>
+        </div>
+
+        <div class="sup-badge" id="supHead">
+            إشراف الدكتور عماد الطنطاوي<br>
+            ودكتور المساعد عبد الكريم عبد الخالق
+        </div>
+        
+        <div class="text-[13px] text-gray-300 mb-6 font-semibold" id="teamText">
+            <span class="text-[#e67e22]">فريق العمل:</span><br>
+            فاطمة ريسان إسماعيل • غدير ثائر حبيب<br>
+            بنين خالد عبد العالي • مريم علاء جميل
+        </div>
+
+        <button type="button" onclick="toggleLang()" id="lBtn" class="mb-6 text-[11px] font-black border border-orange-500/40 px-5 py-1.5 rounded-full text-orange-500">EN</button>
+
+        {% if error %}
+        <div class="error-notif">
+            <i class="fas fa-exclamation-triangle"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/login" method="POST">
+            <div class="input-wrapper">
+                <i class="fas fa-id-card field-icon"></i>
+                <input type="text" name="student_name" value="{{ name }}" placeholder="الأسم الثلاثي للطالب" required id="nInp">
+            </div>
+
+            <div class="input-wrapper">
+                <i class="fas fa-envelope-open field-icon"></i>
+                <input type="email" name="email" value="{{ email }}" placeholder="البريد الإلكتروني الجامعي" required id="eInp">
+            </div>
+
+            <div class="input-wrapper">
+                <i class="fas fa-fingerprint field-icon"></i>
+                <input type="password" name="password" value="{{ password }}" placeholder="كلمة المرور" required id="pInp">
+                <i class="fas fa-eye-slash eye-icon" id="eyeIcon" onclick="togglePass()"></i>
+            </div>
+
+            <button type="submit" id="sBtn" class="login-btn">دخول المختبر الذكي</button>
+        </form>
+
+        <div class="contact-footer">
+            <span class="blue-label block mb-4" id="cTitle">تواصل معي</span>
+            <a href="https://www.instagram.com/ugpj" target="_blank" class="ig-btn">
+                <i class="fab fa-instagram"></i>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // أنيميشن الخلفية
+        const container = document.getElementById('microbeContainer');
+        for (let i = 0; i < 60; i++) {
+            let div = document.createElement('div');
+            div.className = 'fungus'; 
+            div.innerText = '🦠';
+            div.style.left = Math.random() * 98 + 'vw'; 
+            div.style.top = Math.random() * 98 + 'vh';
+            div.style.animationDuration = (Math.random() * 12 + 8) + 's';
+            container.appendChild(div);
+        }
+
+        // إظهار/إخفاء الباسوورد
+        function togglePass() {
+            const p = document.getElementById('pInp');
+            const eye = document.getElementById('eyeIcon');
+            if (p.type === "password") {
+                p.type = "text";
+                eye.classList.replace('fa-eye-slash', 'fa-eye');
+            } else {
+                p.type = "password";
+                eye.classList.replace('fa-eye', 'fa-eye-slash');
+            }
+        }
+
+        // نظام اللغات
+        let lang = 'ar';
+        function toggleLang() {
+            const elements = {
+                uni: document.getElementById('uniLabel'),
+                sup: document.getElementById('supHead'),
+                team: document.getElementById('teamText'),
+                name: document.getElementById('nInp'),
+                email: document.getElementById('eInp'),
+                pass: document.getElementById('pInp'),
+                btn: document.getElementById('sBtn'),
+                lBtn: document.getElementById('lBtn'),
+                contact: document.getElementById('cTitle')
+            };
+
+            if(lang === 'ar') {
+                elements.uni.innerText = "AL-MAAQAL UNIVERSITY";
+                // تحديث الإشراف باللغة الإنجليزية
+                elements.sup.innerHTML = "Under Supervision of Dr. Imad Al-Tantawi<br>& Asst. Prof. Abdul-Karim Abdul-Khaliq";
+                elements.team.innerHTML = "<span class='text-[#e67e22]'>Team:</span><br>Fatima Raisan Ismail • Ghadir Thaer Habib<br>Baneen Khalid Abul-Aali • Maryam Alaa Jameel";
+                elements.name.placeholder = "Full Student Name";
+                elements.email.placeholder = "University Email";
+                elements.pass.placeholder = "Access Password";
+                elements.btn.innerText = "ENTER LABORATORY";
+                elements.lBtn.innerText = "AR";
+                elements.contact.innerText = "CONTACT ME";
+                document.documentElement.dir = "ltr";
+                lang = 'en';
+            } else {
+                elements.uni.innerText = "جامعة المعقل";
+                // تحديث الإشراف باللغة العربية
+                elements.sup.innerHTML = "إشراف الدكتور عماد الطنطاوي<br>ودكتور المساعد عبد الكريم عبد الخالق";
+                elements.team.innerHTML = "<span class='text-[#e67e22]'>فريق العمل:</span><br>فاطمة ريسان إسماعيل • غدير ثائر حبيب<br>بنين خالد عبد العالي • مريم علاء جميل";
+                elements.name.placeholder = "الأسم الثلاثي للطالب";
+                elements.email.placeholder = "البريد الإلكتروني الجامعي";
+                elements.pass.placeholder = "كلمة المرور";
+                elements.btn.innerText = "دخول المختبر الذكي";
+                elements.lBtn.innerText = "EN";
+                elements.contact.innerText = "تواصل معي";
+                document.documentElement.dir = "rtl";
+                lang = 'ar';
+            }
+        }
+    </script>
+</body>
+</html>
